@@ -1,0 +1,40 @@
+﻿.block 
+{
+    position:absolute;
+    padding:15px;
+}
+.block > div
+{
+    background-color:Blue;
+    float:left;
+    width:100%;
+    height:100%;
+}
+@media(max-width:767px)
+{
+    .block 
+    {
+        padding:4px;
+    }
+}
+@media(min-width:768px)
+{
+    .block 
+    {
+        padding:6px;
+    }
+}
+@media(min-width:992px)
+{
+    .block 
+    {
+        padding:8px;
+    }
+}
+@media(min-width:1200px)
+{
+    .block 
+    {
+        padding:10px;
+    }
+}
