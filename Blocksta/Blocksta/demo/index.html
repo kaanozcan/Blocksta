@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Blocksta Demo</title>
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="../src/blocksta.css" rel="stylesheet" />
+
+    <script src="../Script/jquery-2.1.0.js"></script>
+    <script src="../src/blocksta.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.blocksta').blocksta({
+                resizeCallback: function (element) {
+                    var container = $(element);
+                    if (container.width() > 500) {
+                    } else if (container.width() > 250) {
+                        container.find('span').css({
+                            'font-size':'60px'
+                        });
+                    } else if (container.width() > 100) {
+                        container.find('span').css({
+                            'font-size': '40px'
+                        });
+                    } else if (container.width() > 50) {
+                        container.find('span').css({
+                            'font-size': '25px'
+                        });
+                    } else {
+                        container.find('span').css({
+                            'font-size': '16px'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="blocksta">
+            <div class="block" data-width="2" data-height="2" data-x="0" data-y="0">
+                <div>
+                    <span>
+                        Dummy Text
+                    </span>
+                </div>
+            </div>
+            <div class="block" data-width="2" data-height="2" data-x="0" data-y="2">
+                <div></div>
+            </div>
+            <div class="block" data-width="2" data-height="1" data-x="2" data-y="0">
+                <div></div>
+            </div>
+            <div class="block" data-width="2" data-height="2" data-x="2" data-y="1">
+                <div></div>
+            </div>
+            <div class="block" data-width="2" data-height="1" data-x="2" data-y="3">
+                <div></div>
+            </div>
+            <div class="block" data-width="2" data-height="2" data-x="4" data-y="0">
+                <div></div>
+            </div>
+            <div class="block" data-width="1" data-height="2" data-x="4" data-y="2">
+                <div></div>
+            </div>
+            <div class="block" data-width="1" data-height="1" data-x="5" data-y="2">
+                <div></div>
+            </div>
+            <div class="block" data-width="1" data-height="1" data-x="5" data-y="3">
+                <div></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
