@@ -1,11 +1,11 @@
 ﻿.block 
 {
+    box-sizing: border-box;
     position:absolute;
-    padding:15px;
+    padding:10px;
 }
 .block > div
 {
-    background-color:Blue;
     float:left;
     width:100%;
     height:100%;

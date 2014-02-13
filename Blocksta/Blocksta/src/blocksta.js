@@ -56,6 +56,9 @@
                 'left': elementLeft + 'px',
                 'top': elementTop + 'px'
             });
+            if (_settings.resizeCallback){
+                _settings.resizeCallback($(e).children());
+            }
         });
     });
 

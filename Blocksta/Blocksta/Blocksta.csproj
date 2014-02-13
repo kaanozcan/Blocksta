@@ -65,12 +65,18 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="demo\css\site.css" />
+    <Content Include="demo\index.html" />
+    <Content Include="Script\jquery-2.1.0.js" />
     <Content Include="src\blocksta.css" />
     <Content Include="src\blocksta.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="demo\js\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
