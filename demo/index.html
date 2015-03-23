@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+
+  <style>
+    *{
+      box-sizing: border-box;
+    }
+  </style>
+
+</head>
+<body>
+  <div id="myContainer" style="height: 300px; width: 100%">
+
+  </div>
+
+  <script type="text/javascript" src="blocksta.js"></script>
+  <script>
+    var draw = function (element) {
+      var innerContainer = document.createElement('div');
+      element.appendChild(innerContainer);
+
+      innerContainer.style.width = '100%';
+      innerContainer.style.height = '100%';
+      innerContainer.style.backgroundColor = '#00c7ff';
+    }
+
+    var data = [{
+      x:0,
+      y:0,
+      width:1,
+      height:1
+    }, {
+      x:1,
+      y:0,
+      width:1,
+      height:1
+    }, {
+      x:0,
+      y:1,
+      width:2,
+      height:1
+    }, {
+      x:2,
+      y:0,
+      width:2,
+      height:1
+    }, {
+      x:2,
+      y:1,
+      width:1,
+      height:1
+    }, {
+      x:3,
+      y:1,
+      width:1,
+      height:1
+    }];
+
+    for(var k in data){
+      data[k].draw = draw;
+    }
+
+    var options = {
+      data: data,
+      rows:3,
+      baseBlockWidth: 150
+    }
+debugger;
+    blocksta('myContainer', options);
+  </script>
+</body>
+</html>
