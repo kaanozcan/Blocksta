@@ -4,72 +4,140 @@
   <meta charset="UTF-8">
   <title></title>
 
+  <link rel="stylesheet" href="../src/blocksta.css" />
   <style>
     *{
-      box-sizing: border-box;
+      transition: top .3s,right .3s,bottom .3s,left .3s;
     }
   </style>
-
 </head>
 <body>
-  <div id="myContainer" style="height: 300px; width: 100%">
+
+  <div id="dropControl" style="width: 100%;float: left;visibility: hidden;">
+    <input id="positionX" placeholder="X" type="number" />
+    <input id="positionY" placeholder="Y" type="number" />
+    <button id="button" type="button">Drop</button>
+  </div>
+
+  <div id="myContainer" style="height: 300px; width: 100%; float: left;position: relative;">
 
   </div>
 
-  <script type="text/javascript" src="blocksta.js"></script>
+  <script type="text/javascript" src="../src/block.js"></script>
+  <script type="text/javascript" src="../src/column.js"></script>
+  <script type="text/javascript" src="../src/blocksta.js"></script>
+
   <script>
-    var draw = function (element) {
-      var innerContainer = document.createElement('div');
-      element.appendChild(innerContainer);
+    var blocks;
+    var cBlcok;
+    var dropControl = document.getElementById('dropControl');
+    var inputX = document.getElementById('positionX');
+    var inputY = document.getElementById('positionY');
+    var button = document.getElementById('button');
 
-      innerContainer.style.width = '100%';
-      innerContainer.style.height = '100%';
-      innerContainer.style.backgroundColor = '#00c7ff';
-    }
+    button.addEventListener('click', function () {
+      cBlcok.drop(blocks, inputX.value, inputY.value);
+      dropControl.style.visibility = 'hidden';
+    });
 
-    var data = [{
-      x:0,
-      y:0,
-      width:1,
-      height:1
-    }, {
-      x:1,
-      y:0,
-      width:1,
-      height:1
-    }, {
-      x:0,
-      y:1,
-      width:2,
-      height:1
-    }, {
-      x:2,
-      y:0,
-      width:2,
-      height:1
-    }, {
-      x:2,
-      y:1,
-      width:1,
-      height:1
-    }, {
-      x:3,
-      y:1,
-      width:1,
-      height:1
-    }];
+    var draw = function (block) {
+      if(!block.element.childNodes.length){
+        block.element.addEventListener('click', function (e) {
+          cBlcok = block;
+          dropControl.style.visibility = 'visible';
+        });
 
+        var innerContainer = document.createElement('div');
+        block.element.appendChild(innerContainer);
+
+        innerContainer.style.width = '100%';
+        innerContainer.style.height = '100%';
+        innerContainer.style.backgroundColor = '#00c7ff';
+      }
+    };
+
+    var data = [
+      [
+        {
+          x:0,
+          y:0,
+          width:2,
+          height:1
+        }, {
+          x:0,
+          y:1,
+          width:1,
+          height:1
+        }, {
+          x:1,
+          y:1,
+          width:1,
+          height:1
+        }, {
+          x:0,
+          y:2,
+          width:2,
+          height:1
+        }],
+      [
+        {
+        x:0,
+        y:0,
+        width:2,
+        height:1
+      }, {
+        x:0,
+        y:1,
+        width:1,
+        height:1
+      }, {
+        x:1,
+        y:1,
+        width:1,
+        height:1
+      }, {
+        x:0,
+        y:2,
+        width:2,
+        height:1
+      }],
+      [
+        {
+        x:0,
+        y:0,
+        width:2,
+        height:1
+      }, {
+        x:0,
+        y:1,
+        width:1,
+        height:1
+      }, {
+        x:1,
+        y:1,
+        width:1,
+        height:1
+      }, {
+        x:0,
+        y:2,
+        width:2,
+        height:1
+      }]
+    ];
+
+    /*
     for(var k in data){
       data[k].draw = draw;
     }
-
+*/
     var options = {
       data: data,
       rows:3,
-      baseBlockWidth: 150
-    }
-debugger;
-    blocksta('myContainer', options);
+      baseBlockWidth: 150,
+      draw: draw
+    };
+
+    blocks = blocksta('myContainer', options);
   </script>
 </body>
 </html>

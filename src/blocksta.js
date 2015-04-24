@@ -1,18 +1,28 @@
 (function () {
-var glob = {};
+  var Column = window._blocksta.Column;
+  var Block = window._blocksta.Block;
 
-  function blocksta(selector, options){
-    glob = new main(selector, options);
+  var blocksta = function (selector, options){
+    return new main(selector, options);
   }
 
-  function main(selector, options){
+  /*
+  * main
+  * */
+
+  var main = function (selector, options) {
     var self = this;
 
     self.selector = selector;
 
-    self.matrix = [];
+    self.columns = [];
 
-    self.container = document.getElementById(selector);
+    self.wrapper = document.getElementById(selector);
+    self.container = document.createElement('div');
+
+    self.wrapper.appendChild(self.container);
+
+    self.wrapper.className = 'blocksta';
 
     self.containerWidth = self.container.offsetWidth;
     self.containerHeight = self.container.offsetHeight;
@@ -21,44 +31,71 @@ var glob = {};
     self.baseBlockWidth = options.baseBlockWidth;
     self.baseBlockHeight = self.containerHeight / self.rows;
 
-    var matrix = self.matrix;
+    self.drawCallback = options.draw;
+    self.blocks = {};
 
-    for(var i = 0, item; item = options.data[i++];){
-      matrix.push(new Block(item.x, item.y, item.width, item.height, item.draw));
+    var columns = self.columns;
+
+    for(var i = 0, col; col = options.data[i++];){
+      self.setColumnChildren(col);
     }
 
     self.draw();
-  }
+  };
+
+  main.prototype.setColumnChildren = function (col) {
+    var context = this;
+
+    var column = new Column(context);
+
+    context.columns.push(column);
+
+    for(var k = 0, data; data = col[k++];){
+        new Block(
+          data.x,
+          data.y,
+          data.width,
+          data.height,
+          column,
+          context
+        );
+    }
+  };
 
   main.prototype.draw = function(){
     var self = this;
-    var matrix = self.matrix;
+    var columns = self.columns;
 
-    for(var i = 0, item; item = matrix[i++];){
-      if(!item.element){
-        item.element = document.createElement('div');
-        self.container.appendChild(item.element);
-
-        item.element.style.width = (self.baseBlockWidth * item.width) + 'px';
-        item.element.style.height = self.baseBlockHeight + 'px';
-        item.element.style.position = 'absolute';
-        item.element.style.left = (item.x * self.baseBlockWidth) + 'px';
-        item.element.style.top = (item.y * self.baseBlockHeight) + 'px';
-        item.element.style.padding = '5px';
-
-        item.draw(item.element);
-
-      }
+    for(var i in columns){
+      columns[i].draw();
     }
-  }
+  };
 
-  function Block(x, y, w, h, drawCallback){
-    this.x = x;
-    this.y = y;
-    this.width = w;
-    this.height = h;
-    this.draw = drawCallback;
+  main.prototype.guid = function () {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
   }
 
   window.blocksta = blocksta;
+
+
+  /*
+  * Block
+  * */
+
+
+//aeryzus
+  /*
+  if(typeof window.blocksta == 'object'){
+
+  } else {
+    window.blocksta = blocksta;
+  }
+  */
+
 })();

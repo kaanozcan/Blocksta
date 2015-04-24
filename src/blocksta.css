@@ -1,0 +1,39 @@
+.blocksta, .blocksta *{
+  box-sizing: border-box;
+}
+
+.blocksta{
+  overflow-x: scroll;
+}
+
+.blocksta > div {
+  white-space: nowrap;
+  height: 100%;
+  width: auto;
+  overflow:auto;
+  float: left;
+}
+
+.block{
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px;
+}
+
+.block > div {
+  width: 100%;
+  height: 100%;
+}
+
+.column {
+  display: inline-block;
+  white-space: nowrap;
+
+  height: 100%;
+  padding: 5px;
+
+  background-color: beige;
+
+  position: relative;
+}
