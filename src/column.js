@@ -1,5 +1,8 @@
 (function () {
 
+  /**
+   * Constructor
+   * */
   function main(blocksta){
     this.blocksta = blocksta;
     this.children = [];
@@ -7,6 +10,9 @@
     this.generateElement();
   }
 
+  /**
+   * Crates a container element for column
+   * */
   function generateElement(){
     var context = this;
 
@@ -19,6 +25,9 @@
     context.element.addEventListener('drop', onDrop.bind(context));
   }
 
+  /**
+   * Draws columns children and itself
+   * */
   function draw(){
     var context = this;
 
@@ -31,6 +40,9 @@
     context.element.style.width = context.calculateWidth() + 'px';
   }
 
+  /**
+   * Sets column container to width of their total children
+   * */
   function drawSelf(){
     this.element.style.width = this.calculateWidth() + 'px';
   }
@@ -66,6 +78,9 @@
     return result;
   }
 
+  /**
+   * Returns empty positions
+   * */
   function getEmptySpaces(){
     var self = this;
 
@@ -82,6 +97,9 @@
     return result;
   }
 
+  /**
+   * Checks for collision
+   * */
   function checkCollision(x, y){
     var self = this;
     var result = false;
@@ -100,6 +118,9 @@
     return result;
   }
 
+  /**
+   * Sorts an array of positions depending on their distance to a target position
+   * */
   function sortByDistance(arr, target){
     var self = this;
 
@@ -108,6 +129,9 @@
     });
   }
 
+  /**
+   * Gets the distance between two points
+   * */
   function getDistance(point1, point2){
     var xs = 0;
     var ys = 0;
@@ -121,7 +145,10 @@
     return Math.sqrt( xs + ys );
   }
 
-  function drop(block, x, y, maxCol){
+  /**
+   * Drops the block on target position. Handles collisions.
+   * */
+  function drop(block, x, y){
     var self = this;
 
     block.x = x;
@@ -136,24 +163,27 @@
       if(blocks[i] != block && block.checkCollision(blocks[i])){
         var emptySpaces = self.sortByDistance(self.getEmptySpaces(), blocks[i]);
 
-        if(emptySpaces[0]){
-          var targetY = emptySpaces[0].y;
-          var targetX = emptySpaces[0].x;
-        } else {
-          maxCol = maxCol ? maxCol : blocks[i].getAffectedColMax();
+        var targetY, targetX;
 
-          var targetY = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? block.y + block.height : 0;
-          var targetX = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? blocks[i].x : block.x + block.width;
+        if(emptySpaces[0]){
+          targetY = emptySpaces[0].y;
+          targetX = emptySpaces[0].x;
+        } else {
+          targetY = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? block.y + block.height : 0;
+          targetX = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? blocks[i].x : block.x + block.width;
         }
 
 
 
-        self.drop(blocks[i], targetX, targetY, maxCol);
+        self.drop(blocks[i], targetX, targetY);
 
       }
     }
   }
 
+  /**
+   * Removes block from self.children
+   * */
   function removeChild(block){
     var self = this;
 
@@ -162,6 +192,9 @@
     self.children.splice(index, 1);
   }
 
+  /**
+   * Removes block from one column adds to this.
+   * */
   function addBlock(block){
     var self = this;
 
@@ -172,10 +205,10 @@
 
     self.drop(block,0,0);
   }
+
   /**
    * Events
    * */
-
   function onDragOver(e) {
     e.preventDefault();
 
