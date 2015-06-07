@@ -1,16 +1,9 @@
-(function () {
-  var Column = window._blocksta.Column;
-  var Block = window._blocksta.Block;
+Blocksta = (function (blocksta) {
 
-  var blocksta = function (selector, options){
-    return new main(selector, options);
-  }
+  var Column = this.Blocksta.Column;
+  var Block = this.Blocksta.Block;
 
-  /*
-  * main
-  * */
-
-  var main = function (selector, options) {
+  function main(selector, options) {
     var self = this;
 
     self.selector = selector;
@@ -23,6 +16,11 @@
     self.wrapper.appendChild(self.container);
 
     self.wrapper.className = 'blocksta';
+
+    self.wrapper.addEventListener('drop', onDrop.bind(self));
+    self.wrapper.addEventListener('dragover', function (e) {
+      e.preventDefault();
+    });
 
     self.containerWidth = self.container.offsetWidth;
     self.containerHeight = self.container.offsetHeight;
@@ -41,37 +39,37 @@
     }
 
     self.draw();
-  };
+  }
 
-  main.prototype.setColumnChildren = function (col) {
-    var context = this;
+  function setColumnChildren(col) {
+    var self = this;
 
-    var column = new Column(context);
+    var column = new Column(self);
 
-    context.columns.push(column);
+    self.columns.push(column);
 
     for(var k = 0, data; data = col[k++];){
-        new Block(
-          data.x,
-          data.y,
-          data.width,
-          data.height,
-          column,
-          context
-        );
+      new Block(
+        data.x,
+        data.y,
+        data.width,
+        data.height,
+        column,
+        self
+      );
     }
-  };
+  }
 
-  main.prototype.draw = function(){
+  function draw(){
     var self = this;
     var columns = self.columns;
 
     for(var i in columns){
       columns[i].draw();
     }
-  };
+  }
 
-  main.prototype.guid = function () {
+  function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
@@ -81,21 +79,29 @@
       s4() + '-' + s4() + s4() + s4();
   }
 
-  window.blocksta = blocksta;
+  /**
+   * Events
+   * */
 
+  function onDrop(e){
+    //e.preventDefault();
 
-  /*
-  * Block
-  * */
+    var column = new Column(this);
+    var block = this.draggedBlock.block;
 
+    this.columns.push(column);
 
-//aeryzus
-  /*
-  if(typeof window.blocksta == 'object'){
-
-  } else {
-    window.blocksta = blocksta;
+    column.addBlock(block);
   }
-  */
+
+  main.prototype.setColumnChildren = setColumnChildren;
+
+  main.prototype.draw = draw;
+
+  main.prototype.guid = guid;
+
+  return function (selector, options) {
+    return new main(selector, options);
+  }
 
 })();

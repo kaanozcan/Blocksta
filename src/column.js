@@ -1,4 +1,4 @@
-(function (blocksta) {
+(function () {
 
   function main(blocksta){
     this.blocksta = blocksta;
@@ -14,60 +14,9 @@
     context.element.className = 'column';
     context.blocksta.container.appendChild(context.element);
 
+    context.element.addEventListener('dragover', onDragOver.bind(context));
 
-
-    //context.element.setAttribute('ondragover', 'return false');
-
-    context.element.addEventListener('dragover', function (e) {
-      e.preventDefault();
-
-      var block = context.blocksta.draggedBlock.block;
-      var mp = context.blocksta.draggedBlock.mousePosition;
-
-      var targetX = 0;
-      var targetY = 0;
-
-      var x = e.clientX - mp.x;
-      var y = e.clientY - mp.y;
-
-      for(var i = 0; i < context.getBoundX(); i++){
-
-        var boundMin = i * context.blocksta.baseBlockWidth;
-        var boundMax = boundMin + context.blocksta.baseBlockWidth;
-
-        if(x >= boundMin && x < boundMax){
-          targetX = i;
-          break;
-        }
-      }
-
-      for(var i = 0; i < context.blocksta.rows; i++){
-
-        boundMin = i * context.blocksta.baseBlockHeight;
-        boundMax = boundMin + context.blocksta.baseBlockHeight;
-
-        if(y > boundMin && y < boundMax){
-          targetY = i;
-          break;
-        }
-      }
-
-      if(block.x != targetX || block.y != targetY){
-        context.drop(block, targetX, targetY);
-        context.drawSelf();
-      }
-
-
-
-      //debugger;
-    });
-
-    context.element.addEventListener('drop', function (e) {
-      var droppedBlock = context.blocksta.blocks[e.dataTransfer.getData('objectKey')];
-
-
-      //get block init drop
-    });
+    context.element.addEventListener('drop', onDrop.bind(context));
   }
 
   function draw(){
@@ -86,6 +35,9 @@
     this.element.style.width = this.calculateWidth() + 'px';
   }
 
+  /**
+   * Calculates width of column in pixel.
+   * */
   function calculateWidth(){
     var maxX = 0;
 
@@ -98,6 +50,9 @@
 
   }
 
+  /**
+   * Calculates width of column
+   * */
   function getBoundX(){
     var self = this;
 
@@ -173,6 +128,7 @@
     block.y = y;
 
     block.draw();
+    self.drawSelf();
 
     var blocks = self.children;
 
@@ -180,45 +136,135 @@
       if(blocks[i] != block && block.checkCollision(blocks[i])){
         var emptySpaces = self.sortByDistance(self.getEmptySpaces(), blocks[i]);
 
-        for(var z = 0, es; es = emptySpaces[z++];){
+        if(emptySpaces[0]){
+          var targetY = emptySpaces[0].y;
+          var targetX = emptySpaces[0].x;
+        } else {
+          maxCol = maxCol ? maxCol : blocks[i].getAffectedColMax();
 
+          var targetY = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? block.y + block.height : 0;
+          var targetX = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? blocks[i].x : block.x + block.width;
         }
 
 
-        //maxCol = maxCol ? maxCol : this.getAffectedColMax(ref);
 
-        //var targetY = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? block.y + block.height : 0;
-        //var targetX = blocks[i].y + blocks[i].height + 1  <= self.blocksta.rows ? blocks[i].x : block.x + block.width;
-
-        var targetY = emptySpaces[0].y;
-        var targetX = emptySpaces[0].x;
-
-        self.drop(blocks[i], targetX, targetY);
+        self.drop(blocks[i], targetX, targetY, maxCol);
 
       }
     }
   }
 
-  var Column = main;
+  function removeChild(block){
+    var self = this;
 
-  Column.prototype.draw = draw;
-  Column.prototype.generateElement = generateElement;
-  Column.prototype.calculateWidth = calculateWidth;
-  Column.prototype.getBoundX = getBoundX;
-  Column.prototype.drop = drop;
-  Column.prototype.drawSelf = drawSelf;
-  Column.prototype.getEmptySpaces = getEmptySpaces;
-  Column.prototype.checkCollision = checkCollision;
-  Column.prototype.sortByDistance = sortByDistance;
-  Column.prototype.getDistance = getDistance;
+    var index = self.children.indexOf(block);
 
-  if(typeof window._blocksta == 'object'){
-    window._blocksta.Column = Column;
-  } else {
-    window._blocksta = {
-      Column: Column
-    };
+    self.children.splice(index, 1);
   }
 
+  function addBlock(block){
+    var self = this;
 
-})(window._blocksta);
+    block.parent.removeChild(block);
+    block.parent = self;
+    self.children.push(block);
+    self.element.appendChild(block.element);
+
+    self.drop(block,0,0);
+  }
+  /**
+   * Events
+   * */
+
+  function onDragOver(e) {
+    e.preventDefault();
+
+    var self = this;
+
+    var block = self.blocksta.draggedBlock.block;
+
+    if(block.parent == self){
+      var offset = self.element.getBoundingClientRect();
+
+      var mp = self.blocksta.draggedBlock.mousePosition;
+
+      var targetX = 0;
+      var targetY = 0;
+
+      var x = e.clientX - offset.left - mp.x + self.blocksta.baseBlockWidth / 2;
+      var y = e.clientY - offset.top - mp.y + self.blocksta.baseBlockHeight / 2;
+
+
+      for(var i = 0; i < self.getBoundX(); i++){
+
+        var boundMin = i * self.blocksta.baseBlockWidth;
+        var boundMax = boundMin + self.blocksta.baseBlockWidth;
+
+        if(x >= boundMin && x < boundMax){
+          targetX = i;
+          break;
+        }
+      }
+
+      for(var i = 0; i < self.blocksta.rows; i++){
+
+        boundMin = i * self.blocksta.baseBlockHeight;
+        boundMax = boundMin + self.blocksta.baseBlockHeight;
+
+        if(y > boundMin && y < boundMax){
+          targetY = i;
+          break;
+        }
+      }
+
+      if( (block.x != targetX || block.y != targetY) && !isOutofBounds(block, targetX)){
+        self.drop(block, targetX, targetY);
+        self.drawSelf();
+      }
+    }
+
+    function isOutofBounds(block, targetX){
+      var result = false;
+
+      var bound = self.getBoundX();
+
+      if(block.width > 1 && targetX >= bound - 1){
+        result = true;
+      }
+
+      return result;
+    }
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    var self = this;
+
+    var block = self.blocksta.draggedBlock.block;
+
+    if(block.parent != self){
+      self.addBlock(block);
+    }
+
+    return false;
+  }
+
+  main.prototype.draw = draw;
+  main.prototype.generateElement = generateElement;
+  main.prototype.calculateWidth = calculateWidth;
+  main.prototype.getBoundX = getBoundX;
+  main.prototype.drop = drop;
+  main.prototype.drawSelf = drawSelf;
+  main.prototype.getEmptySpaces = getEmptySpaces;
+  main.prototype.checkCollision = checkCollision;
+  main.prototype.sortByDistance = sortByDistance;
+  main.prototype.getDistance = getDistance;
+  main.prototype.removeChild = removeChild;
+  main.prototype.addBlock = addBlock;
+
+  this.Blocksta = this.Blocksta ? this.Blocksta : {};
+
+  this.Blocksta.Column = main;
+})();

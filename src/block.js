@@ -1,6 +1,6 @@
-(function (blocksta) {
+(function () {
 
-  var Block = function (x, y, w, h, column, blocksta){
+  function main(x, y, w, h, column, blocksta){
     this.x = x;
     this.y = y;
     this.width = w;
@@ -16,24 +16,24 @@
     this.parent.children.push(this);
 
     this.generateElement();
-  };
+  }
 
-  Block.prototype.draw = function () {
+  function draw() {
     var self = this;
 
-      self.css({
-        width: (self.blocksta.baseBlockWidth * self.width) + 'px',
-        height: self.blocksta.baseBlockHeight + 'px',
-        left: (self.x * self.blocksta.baseBlockWidth) + 'px',
-        top : (self.y * self.blocksta.baseBlockHeight) + 'px',
-        padding: '5px'
-      });
+    self.css({
+      width: (self.blocksta.baseBlockWidth * self.width) + 'px',
+      height: self.blocksta.baseBlockHeight + 'px',
+      left: (self.x * self.blocksta.baseBlockWidth) + 'px',
+      top : (self.y * self.blocksta.baseBlockHeight) + 'px',
+      padding: '5px'
+    });
 
 
     self.blocksta.drawCallback(self);
-  };
+  }
 
-  Block.prototype.generateElement = function () {
+  function generateElement() {
     var self = this;
 
     self.element = document.createElement('div');
@@ -51,38 +51,20 @@
 
     self.addClass('block');
 
-    self.element.addEventListener('dragstart', function (e) {
-      //e.setDragImage(null, self.blocksta.baseBlockWidth, self.blocksta.baseBlockWidth);
-      self.blocksta.draggedBlock = {
-        block: self,
-        mousePosition: {
-          x: e.layerX,
-          y: e.layerY
-        }
-      };
-      /*
-      self.blocksta.draggedBlock = {
-        block: self,
-        mousePosition: {
-          x: (parseInt(style.getPropertyValue("left"),10) - event.clientX),
-          y: (parseInt(style.getPropertyValue("top"),10) - event.clientX)
-        }
-      };
-      */
-    });
-  };
+    self.element.addEventListener('dragstart', onDragStart.bind(self));
+  }
 
-  Block.prototype.css = function (styleArray) {
+  function css(styleArray) {
     for(var k in styleArray){
       this.element.style[k] = styleArray[k];
     }
-  };
+  }
 
-  Block.prototype.addClass = function (className) {
+  function addClass(className) {
     this.element.className += ' ' + className;
-  };
+  }
 
-  Block.prototype.drop = function (x , y, maxCol) {
+  function drop(x , y, maxCol) {
     this.x = x;
     this.y = y;
 
@@ -102,24 +84,25 @@
     }
 
     ref.draw();
-  };
+  }
 
-  Block.prototype.getAffectedColMax = function (ref) {
+  function getAffectedColMax() {
+    var self = this;
+
     var result = 0;
-    var matrix = ref.matrix;
+    var children = self.parent.children;
 
-    for(var i = 0; i < ref.rows; i++){
-      var clone = new Block(this.x, this.y + i, this.width, this.height);
+    for(var i = 0; i < self.blocksta.rows; i++){
 
-      for(var t = 0; t < matrix[i].length; t++){
-        if(clone.checkCollision(matrix[i])){
-          result = matrix[i].y + matrix[i].width > result ? matrix[i].y + matrix[i].width : result;
+      for(var t = 0; t < children[i].length; t++){
+        if(self.checkCollision(children[i])){
+          result = children[i].y + children[i].width > result ? children[i].y + children[i].width : result;
         }
       }
     }
-  };
+  }
 
-  Block.prototype.checkCollision = function (target) {
+  function checkCollision(target) {
     var result = false;
 
     var thisPoints = [];
@@ -150,15 +133,39 @@
       }
     }
     return result;
-  };
+  }
 
+  /**
+   * Events
+   * */
 
-  if(typeof window._blocksta == 'object'){
-    window._blocksta.Block = Block;
-  } else {
-    window._blocksta = {
-      Block: Block
+  function onDragStart (e) {
+    this.blocksta.draggedBlock = {
+      block: this,
+      mousePosition: {
+        x: e.layerX,
+        y: e.layerY
+      }
     };
   }
 
-})(window._blocksta);
+
+  main.prototype.draw = draw;
+
+  main.prototype.generateElement = generateElement;
+
+  main.prototype.css = css;
+
+  main.prototype.addClass = addClass;
+
+  main.prototype.drop = drop;
+
+  main.prototype.getAffectedColMax = getAffectedColMax;
+
+  main.prototype.checkCollision = checkCollision;
+
+  this.Blocksta = this.Blocksta ? this.Blocksta : {};
+
+  this.Blocksta.Block = main;
+
+})();
