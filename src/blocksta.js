@@ -79,6 +79,14 @@ Blocksta = (function (blocksta) {
       s4() + '-' + s4() + s4() + s4();
   }
 
+  function removeColumn(target){
+    var index = this.columns.indexOf(target);
+
+    if(index > -1){
+      this.columns.splice(index, 1);
+    }
+  }
+
   /**
    * Events
    * */
@@ -95,10 +103,9 @@ Blocksta = (function (blocksta) {
   }
 
   main.prototype.setColumnChildren = setColumnChildren;
-
   main.prototype.draw = draw;
-
   main.prototype.guid = guid;
+  main.prototype.removeColumn = removeColumn;
 
   return function (selector, options) {
     return new main(selector, options);
