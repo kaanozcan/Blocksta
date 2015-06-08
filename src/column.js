@@ -197,13 +197,30 @@
    * */
   function addBlock(block){
     var self = this;
+    var column = block.parent;
+    column.removeChild(block);
 
-    block.parent.removeChild(block);
+    if(!block.parent.children.length){
+      column.element.className += ' killed';
+
+      setTimeout(function () {
+        column.destroySelf();
+      }, 300);
+    }
+
     block.parent = self;
     self.children.push(block);
     self.element.appendChild(block.element);
 
     self.drop(block,0,0);
+  }
+
+  /**
+   * Removes column
+   * */
+  function destroySelf(){
+    this.element.remove();
+    this.blocksta.removeColumn(this);
   }
 
   /**
@@ -296,6 +313,7 @@
   main.prototype.getDistance = getDistance;
   main.prototype.removeChild = removeChild;
   main.prototype.addBlock = addBlock;
+  main.prototype.destroySelf = destroySelf;
 
   this.Blocksta = this.Blocksta ? this.Blocksta : {};
 
