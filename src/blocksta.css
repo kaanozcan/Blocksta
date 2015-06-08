@@ -19,6 +19,7 @@
   left: 0;
   top: 0;
   padding: 5px;
+  transition: all .3s;
 }
 
 .block > div {
@@ -37,4 +38,9 @@
   background-color: beige;
 
   position: relative;
+  transition: all .3s;
+}
+
+.column.killed{
+  width: 0 !important;
 }
