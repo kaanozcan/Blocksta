@@ -10,6 +10,8 @@ This is a library of grid/widget system which supports drop and drag by HTML5 dr
 
   Arrangeable columns
 
+  Write Unit tests
+
 ##How To
 
 ```html
