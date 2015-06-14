@@ -1,16 +1,16 @@
-Blocksta = (function (blocksta) {
+Blocksta = (function () {
 
   var Column = this.Blocksta.Column;
   var Block = this.Blocksta.Block;
 
-  function main(selector, options) {
+  function main(selector, element, options) {
     var self = this;
 
     self.selector = selector;
 
     self.columns = [];
 
-    self.wrapper = document.getElementById(selector);
+    self.wrapper = element;
     self.container = document.createElement('div');
 
     self.wrapper.appendChild(self.container);
@@ -108,7 +108,12 @@ Blocksta = (function (blocksta) {
   main.prototype.removeColumn = removeColumn;
 
   return function (selector, options) {
-    return new main(selector, options);
+
+    var elements = document.querySelectorAll(selector);
+
+    for(var i = 0, el; el = elements[i++];){
+      new main(selector, el, options);
+    }
   }
 
 })();
